@@ -1,0 +1,36 @@
+---
+device_interfaces:
+  - name: GigabitEthernet0/0/0
+    commands:
+      - description Link to Router1
+      - ip address 10.0.12.2 255.255.255.252
+      - no shutdown
+
+  - name: GigabitEthernet0/0/1
+    commands:
+      - description Link to Router3
+      - ip address 10.0.23.1 255.255.255.252
+      - no shutdown
+
+  - name: GigabitEthernet0/0/2
+    commands:
+      - description Trunk to Switch1
+      - no shutdown
+
+  - name: GigabitEthernet0/0/2.10
+    commands:
+      - description Data VLAN Gateway
+      - encapsulation dot1Q 10
+      - ip address 192.168.10.1 255.255.255.0
+
+  - name: GigabitEthernet0/0/2.20
+    commands:
+      - description Voice VLAN Gateway
+      - encapsulation dot1Q 20
+      - ip address 192.168.20.1 255.255.255.0
+
+  - name: GigabitEthernet0/0/2.30
+    commands:
+      - description Management VLAN Gateway
+      - encapsulation dot1Q 30
+      - ip address 192.168.30.2 255.255.255.0

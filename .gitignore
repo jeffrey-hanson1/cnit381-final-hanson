@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.retry
+*.pem
+*.key
+secrets.yml
+vault.yml
+backups/*
+!backups/.gitkeep
+config-pipeline/configs/

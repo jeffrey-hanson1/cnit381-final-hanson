@@ -1,0 +1,29 @@
+---
+- name: Configure base settings on Cisco devices
+  hosts: cisco
+  gather_facts: false
+
+  tasks:
+    - name: Configure hostname
+      ios_config:
+        lines:
+          - "hostname {{ inventory_hostname }}"
+
+    - name: Configure login banner
+      ios_banner:
+        banner: login
+        text: |
+          CNIT 381 Final Project
+          Authorized access only.
+        state: present
+
+    - name: Configure device interfaces
+      ios_config:
+        parents:
+          - "interface {{ item.name }}"
+        lines: "{{ item.commands }}"
+      loop: "{{ device_interfaces }}"
+
+    - name: Save configuration
+      ios_config:
+        save_when: modified

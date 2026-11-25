@@ -1,0 +1,50 @@
+---
+- name: Configure EIGRP and loopback interfaces
+  hosts: routers
+  gather_facts: false
+
+  vars:
+    router_id: "{{ inventory_hostname | replace('Router', '') }}"
+
+  tasks:
+    - name: Configure three loopback interfaces
+      ios_config:
+        parents:
+          - "interface Loopback{{ item }}"
+        lines:
+          - "description {{ inventory_hostname }} Loopback {{ item }}"
+          - "ip address 10.{{ router_id }}.{{ item }}.1 255.255.255.255"
+          - no shutdown
+      loop:
+        - 1
+        - 2
+        - 3
+
+    - name: Configure EIGRP AS 100
+      ios_config:
+        parents:
+          - router eigrp 100
+        lines:
+          - network 10.0.0.0 0.255.255.255
+          - network 192.168.10.0 0.0.0.255
+          - network 192.168.20.0 0.0.0.255
+          - network 192.168.30.0 0.0.0.255
+          - no auto-summary
+          - passive-interface default
+          - no passive-interface GigabitEthernet0/0/0
+          - no passive-interface GigabitEthernet0/0/1
+
+    - name: Save configuration
+      ios_config:
+        save_when: modified
+
+    - name: Verify EIGRP neighbors
+      ios_command:
+        commands:
+          - show ip eigrp neighbors
+          - show ip route eigrp
+      register: eigrp_output
+
+    - name: Display EIGRP results
+      debug:
+        var: eigrp_output.stdout_lines

@@ -1,0 +1,54 @@
+hostname {{ device.hostname }}
+!
+banner login ^Authorized access only - CNIT 381 Final Project^
+!
+{% if device.type == 'switch' %}
+vlan 10
+ name DATA
+vlan 20
+ name VOICE
+vlan 30
+ name MANAGEMENT
+!
+{% endif %}
+{% for interface in device.interfaces %}
+interface {{ interface.name }}
+{% if interface.description is defined %}
+ description {{ interface.description }}
+{% endif %}
+{% if device.type == 'router' and interface.vlan is defined %}
+ encapsulation dot1Q {{ interface.vlan }}
+{% endif %}
+{% if interface.mode is defined %}
+ switchport mode {{ interface.mode }}
+{% if interface.mode == 'trunk' %}
+ switchport trunk allowed vlan 10,20,30
+{% elif interface.mode == 'access' %}
+ switchport access vlan {{ interface.vlan }}
+ spanning-tree portfast
+{% endif %}
+{% endif %}
+{% if interface.ip is defined %}
+ ip address {{ interface.ip | ip_address }} {{ interface.ip | subnet_mask }}
+{% endif %}
+ no shutdown
+!
+{% endfor %}
+{% if device.type == 'router' %}
+router eigrp 100
+ network 10.0.0.0 0.255.255.255
+ network 192.168.10.0 0.0.0.255
+ network 192.168.20.0 0.0.0.255
+ network 192.168.30.0 0.0.0.255
+ no auto-summary
+ passive-interface default
+ no passive-interface GigabitEthernet0/0/0
+ no passive-interface GigabitEthernet0/0/1
+{% else %}
+ip default-gateway 192.168.30.2
+{% endif %}
+!
+ntp server 216.239.35.0
+logging buffered 16384
+!
+end

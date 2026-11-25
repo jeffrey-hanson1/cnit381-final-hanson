@@ -1,0 +1,17 @@
+---
+device_interfaces:
+  - name: GigabitEthernet1/0/1
+    commands:
+      - description Reserved Port
+      - shutdown
+
+  - name: GigabitEthernet1/0/24
+    commands:
+      - description Trunk to Switch1
+      - no shutdown
+
+  - name: Vlan30
+    commands:
+      - description Management VLAN
+      - ip address 192.168.30.12 255.255.255.0
+      - no shutdown

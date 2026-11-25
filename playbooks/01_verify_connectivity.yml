@@ -1,0 +1,16 @@
+---
+- name: Verify connectivity to all Cisco devices
+  hosts: cisco
+  gather_facts: false
+
+  tasks:
+    - name: Check device connectivity
+      ios_command:
+        commands:
+          - show version
+          - show ip interface brief
+      register: device_output
+
+    - name: Display device information
+      debug:
+        var: device_output.stdout_lines

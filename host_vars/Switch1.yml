@@ -1,0 +1,25 @@
+---
+device_interfaces:
+  - name: GigabitEthernet1/0/1
+    commands:
+      - description Link to Router2
+      - no shutdown
+
+  - name: GigabitEthernet1/0/24
+    commands:
+      - description Trunk to Switch2
+      - no shutdown
+
+  - name: Vlan30
+    commands:
+      - description Management VLAN
+      - ip address 192.168.30.11 255.255.255.0
+      - no shutdown
+
+  - name: GigabitEthernet1/0/2
+    commands:
+      - description DEVASC Management Connection
+      - switchport mode access
+      - switchport access vlan 30
+      - spanning-tree portfast
+      - no shutdown

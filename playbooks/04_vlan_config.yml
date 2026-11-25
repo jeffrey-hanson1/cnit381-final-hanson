@@ -1,0 +1,55 @@
+---
+- name: Configure VLANs and trunks
+  hosts: switches
+  gather_facts: false
+
+  tasks:
+    - name: Create VLANs
+      ios_config:
+        parents:
+          - "vlan {{ item.id }}"
+        lines:
+          - "name {{ item.name }}"
+      loop:
+        - { id: 10, name: DATA }
+        - { id: 20, name: VOICE }
+        - { id: 30, name: MANAGEMENT }
+
+    - name: Configure inter-switch trunk
+      ios_config:
+        parents:
+          - interface GigabitEthernet1/0/24
+        lines:
+          - switchport mode trunk
+          - switchport trunk allowed vlan 10,20,30
+          - no shutdown
+
+    - name: Configure router trunk on Switch1
+      ios_config:
+        parents:
+          - interface GigabitEthernet1/0/1
+        lines:
+          - switchport mode trunk
+          - switchport trunk allowed vlan 10,20,30
+          - no shutdown
+      when: inventory_hostname == 'Switch1'
+
+    - name: Configure switch management gateway
+      ios_config:
+        lines:
+          - ip default-gateway 192.168.30.2
+
+    - name: Save configuration
+      ios_config:
+        save_when: modified
+
+    - name: Verify VLANs and trunks
+      ios_command:
+        commands:
+          - show vlan brief
+          - show interfaces trunk
+      register: vlan_output
+
+    - name: Display VLAN results
+      debug:
+        var: vlan_output.stdout_lines

@@ -1,0 +1,27 @@
+---
+- name: Configure network services
+  hosts: cisco
+  gather_facts: false
+
+  tasks:
+    - name: Configure NTP and buffered logging
+      ios_config:
+        lines:
+          - ntp server 216.239.35.0
+          - logging buffered 16384
+
+    - name: Save configuration
+      ios_config:
+        save_when: modified
+
+    - name: Verify network services
+      ios_command:
+        commands:
+          - show ntp status
+          - show ntp associations
+          - show logging
+      register: services_output
+
+    - name: Display service results
+      debug:
+        var: services_output.stdout_lines

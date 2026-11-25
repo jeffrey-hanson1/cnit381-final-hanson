@@ -1,0 +1,24 @@
+---
+- name: Back up all Cisco device configurations
+  hosts: cisco
+  gather_facts: false
+
+  tasks:
+    - name: Retrieve running configuration
+      ios_command:
+        commands:
+          - show running-config
+      register: running_config
+      no_log: true
+
+    - name: Save configuration locally
+      copy:
+        content: "{{ running_config.stdout[0] }}\n"
+        dest: "{{ playbook_dir }}/../backups/{{ inventory_hostname }}.cfg"
+        mode: '0600'
+      delegate_to: localhost
+      no_log: true
+
+    - name: Confirm backup completion
+      debug:
+        msg: "Backup completed for {{ inventory_hostname }}"

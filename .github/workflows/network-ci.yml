@@ -1,0 +1,32 @@
+name: Network Configuration CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-and-generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r config-pipeline/requirements.txt
+
+      - name: Validate and generate configurations
+        run: |
+          cd config-pipeline
+          python3 generate.py
+
+      - name: Upload generated configurations
+        uses: actions/upload-artifact@v5
+        with:
+          name: network-configurations
+          path: config-pipeline/configs/

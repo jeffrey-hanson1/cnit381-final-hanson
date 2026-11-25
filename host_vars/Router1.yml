@@ -1,0 +1,13 @@
+---
+device_interfaces:
+  - name: GigabitEthernet0/0/0
+    commands:
+      - description Link to Router2
+      - ip address 10.0.12.1 255.255.255.252
+      - no shutdown
+
+  - name: GigabitEthernet0/0/1
+    commands:
+      - description Link to Router3
+      - ip address 10.0.13.1 255.255.255.252
+      - no shutdown
