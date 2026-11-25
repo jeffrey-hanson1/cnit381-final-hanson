@@ -20,7 +20,7 @@ devices:
     interfaces:
       - name: GigabitEthernet0/0/0
         description: Link to Router1
-        ip: 10.0.12.1/30
+        ip: 10.0.12.2/30
       - name: GigabitEthernet0/0/1
         description: Link to Router3
         ip: 10.0.23.1/30
